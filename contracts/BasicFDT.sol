@@ -5,8 +5,8 @@ import { SafeMath }       from "../../../../lib/openzeppelin-contracts/contracts
 import { SignedSafeMath } from "../../../../lib/openzeppelin-contracts/contracts/math/SignedSafeMath.sol";
 import { ERC20 }          from "../../../../lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 
-import { SafeMathInt }  from "../../../libraries/math/v1/SafeMathInt.sol";
-import { SafeMathUint } from "../../../libraries/math/v1/SafeMathUint.sol";
+import { SafeMathInt }  from "../../../libraries/math/contracts/SafeMathInt.sol";
+import { SafeMathUint } from "../../../libraries/math/contracts/SafeMathUint.sol";
 
 import { IBasicFDT } from "./interfaces/IBasicFDT.sol";
 

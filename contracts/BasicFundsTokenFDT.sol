@@ -3,7 +3,7 @@ pragma solidity 0.6.11;
 
 import { IERC20, SafeERC20 } from "../../../../lib/openzeppelin-contracts/contracts/token/ERC20/SafeERC20.sol";
 
-import { BasicFDT, SignedSafeMath } from "../../funds-distribution-token/v1/BasicFDT.sol";
+import { BasicFDT, SignedSafeMath } from "../../funds-distribution-token/contracts/BasicFDT.sol";
 
 import { IBasicFundsTokenFDT } from "./interfaces/IBasicFundsTokenFDT.sol";
 
