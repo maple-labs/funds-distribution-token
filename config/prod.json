@@ -1,0 +1,37 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/BasicFDT.sol": {
+      "urls": ["contracts/BasicFDT.sol"]
+    },
+    "contracts/BasicFundsTokenFDT.sol": {
+      "urls": ["contracts/BasicFundsTokenFDT.sol"]
+    },
+    "contracts/ExtendedFDT.sol": {
+      "urls": ["contracts/ExtendedFDT.sol"]
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "devdoc",
+          "userdoc",
+          "metadata",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.gasEstimates"
+        ],
+        "": ["ast"]
+      }
+    },
+    "metadata": {
+      "bytecodeHash": "none"
+    }
+  }
+}

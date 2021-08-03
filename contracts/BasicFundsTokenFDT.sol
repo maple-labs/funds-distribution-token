@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity 0.6.11;
 
-import { IERC20, SafeERC20 } from "../../../../lib/openzeppelin-contracts/contracts/token/ERC20/SafeERC20.sol";
-
-import { BasicFDT, SignedSafeMath } from "../../funds-distribution-token/contracts/BasicFDT.sol";
+import { IERC20, SafeERC20 } from "../modules/openzeppelin-contracts/contracts/token/ERC20/SafeERC20.sol";
 
 import { IBasicFundsTokenFDT } from "./interfaces/IBasicFundsTokenFDT.sol";
+
+import { BasicFDT, SignedSafeMath } from "./BasicFDT.sol";
 
 /// @title BasicFundsTokenFDT implements the Basic FDT functionality with a separate Funds Token.
 abstract contract BasicFundsTokenFDT is IBasicFundsTokenFDT, BasicFDT {
