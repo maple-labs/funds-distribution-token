@@ -4,3 +4,6 @@
 [submodule "modules/math"]
 	path = modules/math
 	url = https://github.com/maple-labs/math.git
+[submodule "modules/maple-test"]
+	path = modules/maple-test
+	url = https://github.com/maple-labs/maple-test.git

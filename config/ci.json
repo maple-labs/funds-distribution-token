@@ -9,6 +9,9 @@
     },
     "contracts/ExtendedFDT.sol": {
       "urls": ["contracts/ExtendedFDT.sol"]
+    },
+    "contracts/test/BasicFundsTokenFDT.t.sol": {
+      "urls": ["contracts/test/BasicFundsTokenFDT.t.sol"]
     }
   },
   "settings": {
