@@ -5,27 +5,26 @@ import { IERC20, SafeERC20 } from "../modules/openzeppelin-contracts/contracts/t
 
 import { IBasicFundsTokenFDT } from "./interfaces/IBasicFundsTokenFDT.sol";
 
-import { BasicFDT, SignedSafeMath } from "./BasicFDT.sol";
+import { BasicFDT } from "./BasicFDT.sol";
 
 /// @title BasicFundsTokenFDT implements the Basic FDT functionality with a separate Funds Token.
 abstract contract BasicFundsTokenFDT is IBasicFundsTokenFDT, BasicFDT {
 
-    using SafeERC20      for  IERC20;
-    using SignedSafeMath for  int256;
+    using SafeERC20 for IERC20;
 
-    IERC20 public override immutable fundsToken;
+    address public override immutable fundsToken;
 
     uint256 public override fundsTokenBalance;
 
     constructor(string memory name, string memory symbol, address _fundsToken) BasicFDT(name, symbol) public {
-        fundsToken = IERC20(_fundsToken);
+        fundsToken = _fundsToken;
     }
 
     function withdrawFunds() public virtual override(IBasicFundsTokenFDT, BasicFDT) {
         uint256 withdrawableFunds = _prepareWithdraw();
 
         if (withdrawableFunds > uint256(0)) {
-            fundsToken.safeTransfer(msg.sender, withdrawableFunds);
+            IERC20(fundsToken).safeTransfer(msg.sender, withdrawableFunds);
 
             _updateFundsTokenBalance();
         }
@@ -38,7 +37,7 @@ abstract contract BasicFundsTokenFDT is IBasicFundsTokenFDT, BasicFDT {
     function _updateFundsTokenBalance() internal virtual override returns (int256) {
         uint256 _prevFundsTokenBalance = fundsTokenBalance;
 
-        fundsTokenBalance = fundsToken.balanceOf(address(this));
+        fundsTokenBalance = IERC20(fundsToken).balanceOf(address(this));
 
         return int256(fundsTokenBalance).sub(int256(_prevFundsTokenBalance));
     }
