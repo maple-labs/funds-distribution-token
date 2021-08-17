@@ -5,7 +5,7 @@ import { IERC20, SafeERC20 } from "../modules/openzeppelin-contracts/contracts/t
 
 import { IBasicFundsTokenFDT } from "./interfaces/IBasicFundsTokenFDT.sol";
 
-import { BasicFDT, SignedSafeMath } from "./BasicFDT.sol";
+import { BasicFDT } from "./BasicFDT.sol";
 
 /// @title BasicFundsTokenFDT implements the Basic FDT functionality with a separate Funds Token.
 abstract contract BasicFundsTokenFDT is IBasicFundsTokenFDT, BasicFDT {
