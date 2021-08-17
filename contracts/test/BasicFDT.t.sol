@@ -7,24 +7,10 @@ import { ERC20, SafeMath }  from "../../modules/openzeppelin-contracts/contracts
 import { BasicFDT }         from "../BasicFDT.sol";
 import { IBasicFDT }        from "../interfaces/IBasicFDT.sol";
 
-contract Account {
+import { Account }          from "./accounts/Account.sol";
 
-    function try_basicFDT_updateFundsRecevied(address fdt) external returns(bool ok) {
-        string memory sig = "updateFundsReceived()";
-        (ok,) = fdt.call(abi.encodeWithSignature(sig));
-    }
 
-    function try_basicFDT_transfer(address fdt, address to, uint256 value) external returns(bool ok) {
-        string memory sig = "transfer(address,uint256)";
-        (ok,) = fdt.call(abi.encodeWithSignature(sig, to, value));
-    }
-
-    function basicFDT_withdrawFunds(address fdt) external {
-        IBasicFDT(fdt).withdrawFunds();
-    }
-}
-
-contract CompleteFDT is BasicFDT {
+contract MockFDT is BasicFDT {
 
     uint256 public fundsBalance;
     uint256 public lastFundsBalance;
@@ -62,7 +48,7 @@ contract CompleteFDT is BasicFDT {
         return pointsPerShare;
     }
 
-    function pointsMultiplier_() external view returns(uint256) {
+    function pointsMultiplier_() external pure returns(uint256) {
         return pointsMultiplier;
     }
 }
@@ -71,12 +57,12 @@ contract BasicFDTTest is MapleTest {
 
     using SafeMath for uint256;
 
-    CompleteFDT   token;
+    MockFDT   token;
     Account       account1;
     Account       account2;
 
     function setUp() public {
-        token    = new CompleteFDT("CompleteFDT", "FDT");
+        token    = new MockFDT("MockFDT", "FDT");
         account1 = new Account();
         account2 = new Account();
     }

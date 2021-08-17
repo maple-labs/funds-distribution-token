@@ -7,6 +7,8 @@ import { ERC20, SafeMath }  from "../../modules/openzeppelin-contracts/contracts
 import { BasicFundsTokenFDT } from "../BasicFundsTokenFDT.sol";
 import { IBasicFDT }          from "../interfaces/IBasicFDT.sol";
 
+import { Account }          from "./accounts/Account.sol";
+
 
 contract CompleteBasicFundsTokenFDT is BasicFundsTokenFDT {
 
@@ -42,23 +44,6 @@ contract MockToken is ERC20 {
         _mint(to, amt);
     }
 
-}
-
-contract Account {
-
-    function try_basicFundsTokenFDT_updateFundsRecevied(address fdt) external returns(bool ok) {
-        string memory sig = "updateFundsReceived()";
-        (ok,) = fdt.call(abi.encodeWithSignature(sig));
-    }
-
-    function try_basicFundsTokenFDT_transfer(address fdt, address to, uint256 value) external returns(bool ok) {
-        string memory sig = "transfer(address,uint256)";
-        (ok,) = fdt.call(abi.encodeWithSignature(sig, to, value));
-    }
-
-    function basicFundsTokenFDT_withdrawFunds(address fdt) external {
-        IBasicFDT(fdt).withdrawFunds();
-    }
 }
 
 contract BasicFundsTokenFDTTest is MapleTest {
