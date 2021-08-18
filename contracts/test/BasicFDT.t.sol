@@ -86,10 +86,10 @@ contract BasicFDTTest is MapleTest {
 
         expectedPointsCorrection = 3402823669209384634633746074317682114559;
 
-        token.increaseFundsReceived(50000);
+        token.increaseFundsReceived(50_000);
         token.updateFundsReceived();
 
-        assertEq(token.fundsBalance(),    60000);
+        assertEq(token.fundsBalance(),    60_000);
         assertEq(token.pointsPerShare_(), expectedPointsCorrection);
     }
 

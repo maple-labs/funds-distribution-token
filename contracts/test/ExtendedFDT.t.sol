@@ -107,10 +107,10 @@ contract ExtendedFDTTest is MapleTest {
 
         shouldBeLossesPerCorrection = 3402823669209384634633746074317682114559;
 
-        token.increaseLossesReceived(50000);
+        token.increaseLossesReceived(50_000);
         token.updateLossesReceived();
 
-        assertEq(token.lossesBalance(),   60000);
+        assertEq(token.lossesBalance(),   60_000);
         assertEq(token.lossesPerShare_(), shouldBeLossesPerCorrection);
     }
 

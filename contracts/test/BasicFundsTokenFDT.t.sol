@@ -48,10 +48,10 @@ contract MockToken is ERC20 {
 
 contract BasicFundsTokenFDTTest is MapleTest {
 
-    Account                     account1;
-    Account                     account2;
-    CompleteBasicFundsTokenFDT  fundsTokenFdt;
-    MockToken                   fundsToken;
+    Account                    account1;
+    Account                    account2;
+    CompleteBasicFundsTokenFDT fundsTokenFdt;
+    MockToken                  fundsToken;
 
     function setUp() public {
         account1      = new Account();
@@ -83,10 +83,10 @@ contract BasicFundsTokenFDTTest is MapleTest {
         expectedPointsPerCorrection = 3402823669209384634633746074317682114559;
 
         // Transfer more funds
-        fundsToken.mint(address(fundsTokenFdt), 50000);
+        fundsToken.mint(address(fundsTokenFdt), 50_000);
         fundsTokenFdt.updateFundsReceived();
 
-        assertEq(fundsTokenFdt.fundsTokenBalance(), 60000);
+        assertEq(fundsTokenFdt.fundsTokenBalance(), 60_000);
         assertEq(fundsTokenFdt.pointsPerShare_(),   expectedPointsPerCorrection);
     }
 

@@ -29,7 +29,7 @@ contract Account {
     }
 
     /**********************/
-    /*** try functions ***/
+    /*** Try functions ***/
     /********************/
 
     function try_basicFDT_updateFundsRecevied(address fdt) external returns (bool ok) {
@@ -61,6 +61,5 @@ contract Account {
         string memory sig = "transfer(address,uint256)";
         (ok,) = fdt.call(abi.encodeWithSignature(sig, to, value));
     }
-
 
 }
