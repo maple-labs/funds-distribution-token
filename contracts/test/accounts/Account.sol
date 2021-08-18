@@ -4,23 +4,11 @@ pragma solidity 0.6.11;
 import { IBasicFDT }    from "../../interfaces/IBasicFDT.sol";
 import { IExtendedFDT } from "../../interfaces/IExtendedFDT.sol";
 
-
 contract Account {
 
-
-    /******************/
-    /*** Basic FDT ***/
-    /*****************/
-
-    function try_basicFDT_updateFundsRecevied(address fdt) external returns(bool ok) {
-        string memory sig = "updateFundsReceived()";
-        (ok,) = fdt.call(abi.encodeWithSignature(sig));
-    }
-
-    function try_basicFDT_transfer(address fdt, address to, uint256 value) external returns(bool ok) {
-        string memory sig = "transfer(address,uint256)";
-        (ok,) = fdt.call(abi.encodeWithSignature(sig, to, value));
-    }
+    /************************/
+    /*** Direct Functions ***/
+    /***********************/
 
     function basicFDT_recognizeLosses(address fdt) external {
         string memory sig = "recognizeLosses()";
@@ -32,40 +20,47 @@ contract Account {
         IBasicFDT(fdt).withdrawFunds();
     }
 
-    /*********************/
-    /*** Extended FDT ***/
-    /********************/
-
-    function try_ExtendedFDT_updateLossesRecevied(address fdt) external returns(bool ok) {
-        string memory sig = "updateLossesReceived()";
-        (ok,) = fdt.call(abi.encodeWithSignature(sig));
-    }
-
-    function try_ExtendedFDT_transfer(address fdt, address to, uint256 value) external returns(bool ok) {
-        string memory sig = "transfer(address,uint256)";
-        (ok,) = fdt.call(abi.encodeWithSignature(sig, to, value));
+    function basicFundsTokenFDT_withdrawFunds(address fdt) external {
+        IBasicFDT(fdt).withdrawFunds();
     }
 
     function extendedFDT_withdrawFunds(address fdt) external {
         IExtendedFDT(fdt).withdrawFunds();
     }
 
-
-    /***********************/
-    /*** Basic Funds FDT ***/
     /**********************/
+    /*** try functions ***/
+    /********************/
 
-    function try_basicFundsTokenFDT_updateFundsRecevied(address fdt) external returns(bool ok) {
+    function try_basicFDT_updateFundsRecevied(address fdt) external returns (bool ok) {
         string memory sig = "updateFundsReceived()";
         (ok,) = fdt.call(abi.encodeWithSignature(sig));
     }
 
-    function try_basicFundsTokenFDT_transfer(address fdt, address to, uint256 value) external returns(bool ok) {
+    function try_basicFDT_transfer(address fdt, address to, uint256 value) external returns (bool ok) {
         string memory sig = "transfer(address,uint256)";
         (ok,) = fdt.call(abi.encodeWithSignature(sig, to, value));
     }
 
-    function basicFundsTokenFDT_withdrawFunds(address fdt) external {
-        IBasicFDT(fdt).withdrawFunds();
+    function try_extendedFDT_updateLossesRecevied(address fdt) external returns (bool ok) {
+        string memory sig = "updateLossesReceived()";
+        (ok,) = fdt.call(abi.encodeWithSignature(sig));
     }
+
+    function try_extendedFDT_transfer(address fdt, address to, uint256 value) external returns (bool ok) {
+        string memory sig = "transfer(address,uint256)";
+        (ok,) = fdt.call(abi.encodeWithSignature(sig, to, value));
+    }
+
+    function try_basicFundsTokenFDT_updateFundsRecevied(address fdt) external returns (bool ok) {
+        string memory sig = "updateFundsReceived()";
+        (ok,) = fdt.call(abi.encodeWithSignature(sig));
+    }
+
+    function try_basicFundsTokenFDT_transfer(address fdt, address to, uint256 value) external returns (bool ok) {
+        string memory sig = "transfer(address,uint256)";
+        (ok,) = fdt.call(abi.encodeWithSignature(sig, to, value));
+    }
+
+
 }

@@ -5,10 +5,10 @@ import { MapleTest }        from "../../modules/maple-test/contracts/test.sol";
 import { ERC20, SafeMath }  from "../../modules/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 
 import { BasicFundsTokenFDT } from "../BasicFundsTokenFDT.sol";
-import { IBasicFDT }          from "../interfaces/IBasicFDT.sol";
 
-import { Account }          from "./accounts/Account.sol";
+import { IBasicFDT } from "../interfaces/IBasicFDT.sol";
 
+import { Account } from "./accounts/Account.sol";
 
 contract CompleteBasicFundsTokenFDT is BasicFundsTokenFDT {
 
@@ -22,15 +22,15 @@ contract CompleteBasicFundsTokenFDT is BasicFundsTokenFDT {
         _burn(account, amt);
     }
 
-    function pointsCorrection_(address account) external view returns(int256) {
+    function pointsCorrection_(address account) external view returns (int256) {
         return pointsCorrection[account];
     } 
 
-    function pointsPerShare_() external view returns(uint256) {
+    function pointsPerShare_() external view returns (uint256) {
         return pointsPerShare;
     }
 
-    function pointsMultiplier_() external view returns(uint256) {
+    function pointsMultiplier_() external view returns (uint256) {
         return pointsMultiplier;
     }
 
@@ -48,24 +48,23 @@ contract MockToken is ERC20 {
 
 contract BasicFundsTokenFDTTest is MapleTest {
 
-    using SafeMath for uint256;
-
+    Account                     account1;
+    Account                     account2;
     CompleteBasicFundsTokenFDT  fundsTokenFdt;
-    MockToken                      fundsToken;
-    Account                          account1;
-    Account                          account2;
+    MockToken                   fundsToken;
 
     function setUp() public {
-        fundsToken    = new MockToken("Token", "TKN");
-        fundsTokenFdt = new CompleteBasicFundsTokenFDT("BasicFDT", "FDT", address(fundsToken));
         account1      = new Account();
         account2      = new Account();
+        fundsToken    = new MockToken("Token", "TKN");
+        fundsTokenFdt = new CompleteBasicFundsTokenFDT("BasicFDT", "FDT", address(fundsToken));
     }
 
     function test_updateFundsReceived() public {
         assertEq(fundsTokenFdt.fundsTokenBalance(), 0);
+
         // Mint and transfer some funds token to FundsTokenFDT.
-        fundsToken.mint(address(fundsTokenFdt), 10000);
+        fundsToken.mint(address(fundsTokenFdt), 10_000);
 
         assertTrue(!account1.try_basicFundsTokenFDT_updateFundsRecevied(address(fundsTokenFdt)));  // Should fail because total supply is zero
         
@@ -74,55 +73,60 @@ contract BasicFundsTokenFDTTest is MapleTest {
 
         assertEq(fundsTokenFdt.pointsPerShare_(), 0);  // Before the execution of `updateFundsReceived`.
         
-        uint256 shouldBePointsPerCorrection = fundsTokenFdt.pointsPerShare_().add(uint256(10000).mul(fundsTokenFdt.pointsMultiplier_())/ fundsTokenFdt.totalSupply());
+        uint256 expectedPointsPerCorrection = 567137278201564105772291012386280352426;
         assertTrue(account1.try_basicFundsTokenFDT_updateFundsRecevied(address(fundsTokenFdt)));  // Should pass as total supply is greater than 0.
-        // Funds token balance get updated after the `updateFundsReceived()`.
-        assertEq(fundsTokenFdt.fundsTokenBalance(),                       10000);
-        assertEq(fundsTokenFdt.pointsPerShare_(),   shouldBePointsPerCorrection);
 
-        shouldBePointsPerCorrection = fundsTokenFdt.pointsPerShare_().add(uint256(50000).mul(fundsTokenFdt.pointsMultiplier_())/ fundsTokenFdt.totalSupply());
+        // Funds token balance get updated after the `updateFundsReceived()`.
+        assertEq(fundsTokenFdt.fundsTokenBalance(), 10_000);
+        assertEq(fundsTokenFdt.pointsPerShare_(),   expectedPointsPerCorrection);
+
+        expectedPointsPerCorrection = 3402823669209384634633746074317682114559;
 
         // Transfer more funds
         fundsToken.mint(address(fundsTokenFdt), 50000);
         fundsTokenFdt.updateFundsReceived();
 
-        assertEq(fundsTokenFdt.fundsTokenBalance(),                       60000);
-        assertEq(fundsTokenFdt.pointsPerShare_(),   shouldBePointsPerCorrection);
+        assertEq(fundsTokenFdt.fundsTokenBalance(), 60000);
+        assertEq(fundsTokenFdt.pointsPerShare_(),   expectedPointsPerCorrection);
     }
 
     function test_mint() public {
         fundsTokenFdt.mint(address(account1), 1000);
 
-        assertEq(fundsTokenFdt.balanceOf(address(account1)), 1000);
+        assertEq(fundsTokenFdt.balanceOf(address(account1)),         1000);
         assertEq(fundsTokenFdt.pointsCorrection_(address(account1)), 0);
 
         // Mint and transfer some funds token to FundsTokenFDT.
-        fundsToken.mint(address(fundsTokenFdt), 10000);
+        fundsToken.mint(address(fundsTokenFdt), 10_000);
         fundsTokenFdt.updateFundsReceived();
 
         // Mint more FDTs
-        int256 newPointsCorrection = fundsTokenFdt.pointsCorrection_(address(account1)) - int256(fundsTokenFdt.pointsPerShare_().mul(2000));
+        int256 newPointsCorrection = -6805647338418769269267492148635364229120000;
         fundsTokenFdt.mint(address(account1), 2000);
-        assertEq(fundsTokenFdt.balanceOf(address(account1)), 3000);
+        assertEq(fundsTokenFdt.balanceOf(address(account1)),         3000);
         assertEq(fundsTokenFdt.pointsCorrection_(address(account1)), newPointsCorrection);
     }
 
     function test_burn() public {
-        fundsTokenFdt.mint(address(account1), 2000);
-        fundsToken.mint(address(fundsTokenFdt), 10000);
+        fundsTokenFdt.mint(address(account1),   2000);
+        fundsToken.mint(address(fundsTokenFdt), 10_000);
+
         fundsTokenFdt.updateFundsReceived();
+
         int256 oldPointsCorrection = fundsTokenFdt.pointsCorrection_(address(account1));
-        int256 newPointsCorrection = oldPointsCorrection + int256(fundsTokenFdt.pointsPerShare_().mul(100));
+        int256 newPointsCorrection = oldPointsCorrection + int256(fundsTokenFdt.pointsPerShare_() * 100);
+
         // Mint and transfer some funds token to FundsTokenFDT.
         fundsTokenFdt.burn(address(account1), 100);
 
-        assertEq(fundsTokenFdt.balanceOf(address(account1)), 1900);
+        assertEq(fundsTokenFdt.balanceOf(address(account1)),         1900);
         assertEq(fundsTokenFdt.pointsCorrection_(address(account1)), newPointsCorrection);
     }
 
     function test_transfer() public {
-        fundsTokenFdt.mint(address(account1), 2000);
-        fundsToken.mint(address(fundsTokenFdt), 10000);
+        fundsTokenFdt.mint(address(account1),   2000);
+        fundsToken.mint(address(fundsTokenFdt), 10_000);
+
         fundsTokenFdt.updateFundsReceived();
 
         int256 oldPointsCorrectionFrom = fundsTokenFdt.pointsCorrection_(address(account1));
@@ -136,7 +140,7 @@ contract BasicFundsTokenFDTTest is MapleTest {
     function test_withdrawFunds() public {
         fundsTokenFdt.mint(address(account1), 2000);
         fundsTokenFdt.mint(address(account2), 3000);
-        fundsToken.mint(address(fundsTokenFdt), 10000);
+        fundsToken.mint(address(fundsTokenFdt), 10_000);
         fundsTokenFdt.updateFundsReceived();
 
         assertEq(fundsTokenFdt.withdrawnFundsOf(address(account1)), 0);
