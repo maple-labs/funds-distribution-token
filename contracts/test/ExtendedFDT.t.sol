@@ -99,19 +99,16 @@ contract ExtendedFDTTest is MapleTest {
 
         assertEq(token.lossesPerShare_(), 0);  // Before the execution of `updateLossesReceived`.
         
-        uint256 shouldBeLossesPerCorrection = 567137278201564105772291012386280352426;
         assertTrue(account1.try_extendedFDT_updateLossesRecevied(address(token)));  // Should pass as total supply is greater than 0.
 
         assertEq(token.lossesBalance(),   10_000);
-        assertEq(token.lossesPerShare_(), shouldBeLossesPerCorrection);
-
-        shouldBeLossesPerCorrection = 3402823669209384634633746074317682114559;
+        assertEq(token.lossesPerShare_(), 567137278201564105772291012386280352426); // lossesPerShare + 10_000 * pointMultiplier / totalSupply
 
         token.increaseLossesReceived(50_000);
         token.updateLossesReceived();
 
         assertEq(token.lossesBalance(),   60_000);
-        assertEq(token.lossesPerShare_(), shouldBeLossesPerCorrection);
+        assertEq(token.lossesPerShare_(), 3402823669209384634633746074317682114559); // lossessPerShare + 50_000 * pointMultiplier / totalSupply
     }
 
     function test_mint() public {
@@ -123,11 +120,10 @@ contract ExtendedFDTTest is MapleTest {
         token.increaseLossesReceived(10_000);
         token.updateLossesReceived();
 
-        int256 newLossesCorrection = -6805647338418769269267492148635364229120000;
         token.mint(address(account1), 2000);
 
         assertEq(token.balanceOf(address(account1)),         3000);
-        assertEq(token.lossesCorrection_(address(account1)), newLossesCorrection);
+        assertEq(token.lossesCorrection_(address(account1)), -6805647338418769269267492148635364229120000); // lossesCorrection[account1] - 2000 * pointMultiplier
     }
 
     function test_burn() public {

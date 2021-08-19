@@ -73,21 +73,18 @@ contract BasicFundsTokenFDTTest is MapleTest {
 
         assertEq(fundsTokenFdt.pointsPerShare_(), 0);  // Before the execution of `updateFundsReceived`.
         
-        uint256 expectedPointsPerCorrection = 567137278201564105772291012386280352426;
         assertTrue(account1.try_basicFundsTokenFDT_updateFundsRecevied(address(fundsTokenFdt)));  // Should pass as total supply is greater than 0.
 
         // Funds token balance get updated after the `updateFundsReceived()`.
         assertEq(fundsTokenFdt.fundsTokenBalance(), 10_000);
-        assertEq(fundsTokenFdt.pointsPerShare_(),   expectedPointsPerCorrection);
-
-        expectedPointsPerCorrection = 3402823669209384634633746074317682114559;
+        assertEq(fundsTokenFdt.pointsPerShare_(),   567137278201564105772291012386280352426); // pointsPerShare + 10_000 * pointMultiplier / totalSupply
 
         // Transfer more funds
         fundsToken.mint(address(fundsTokenFdt), 50_000);
         fundsTokenFdt.updateFundsReceived();
 
         assertEq(fundsTokenFdt.fundsTokenBalance(), 60_000);
-        assertEq(fundsTokenFdt.pointsPerShare_(),   expectedPointsPerCorrection);
+        assertEq(fundsTokenFdt.pointsPerShare_(),   3402823669209384634633746074317682114559); // pointsPerShare + 50_000 * pointMultiplier / totalSupply
     }
 
     function test_mint() public {
@@ -101,10 +98,9 @@ contract BasicFundsTokenFDTTest is MapleTest {
         fundsTokenFdt.updateFundsReceived();
 
         // Mint more FDTs
-        int256 newPointsCorrection = -6805647338418769269267492148635364229120000;
         fundsTokenFdt.mint(address(account1), 2000);
         assertEq(fundsTokenFdt.balanceOf(address(account1)),         3000);
-        assertEq(fundsTokenFdt.pointsCorrection_(address(account1)), newPointsCorrection);
+        assertEq(fundsTokenFdt.pointsCorrection_(address(account1)), -6805647338418769269267492148635364229120000); // pointsCorrection[account1] - 2000 * pointMultiplier
     }
 
     function test_burn() public {
