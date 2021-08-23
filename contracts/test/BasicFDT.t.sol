@@ -33,7 +33,7 @@ contract MockFDT is BasicFDT {
     }
 
     function _updateFundsTokenBalance() internal override returns (int256 delta) {
-        delta           = int256(fundsBalance - lastFundsBalance);
+        delta            = int256(fundsBalance - lastFundsBalance);
         lastFundsBalance = fundsBalance;
     }
 

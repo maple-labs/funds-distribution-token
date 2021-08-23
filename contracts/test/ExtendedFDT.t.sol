@@ -34,19 +34,19 @@ contract MockFDT is ExtendedFDT {
     }
  
     function _recognizeLosses() internal override returns (uint256 losses) {
-        losses       = _prepareLossesWithdraw();
+        losses        = _prepareLossesWithdraw();
         lossesBalance = lossesBalance.sub(losses);
 
         _updateLossesBalance();
     }
 
     function _updateFundsTokenBalance() internal override returns (int256 delta) {
-        delta           = int256(fundsBalance - lastFundsBalance);
+        delta            = int256(fundsBalance - lastFundsBalance);
         lastFundsBalance = fundsBalance;
     }
 
     function _updateLossesBalance() internal override returns (int256 delta) {
-        delta            = int256(lossesBalance - lastLossesBalance);
+        delta             = int256(lossesBalance - lastLossesBalance);
         lastLossesBalance = lossesBalance;
     }
 
