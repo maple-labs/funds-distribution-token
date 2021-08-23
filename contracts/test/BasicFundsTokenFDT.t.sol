@@ -144,6 +144,9 @@ contract BasicFundsTokenFDTTest is MapleTest {
 
         uint256 withdrawableFunds1 = fundsTokenFdt.withdrawableFundsOf(address(account1));
         uint256 withdrawableFunds2 = fundsTokenFdt.withdrawableFundsOf(address(account2));
+
+        assertEq(withdrawableFunds1, 4000);
+        assertEq(withdrawableFunds2, 6000);
         
         assertEq(fundsToken.balanceOf(address(account1)), 0);
         assertEq(fundsToken.balanceOf(address(account2)), 0);

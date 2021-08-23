@@ -164,6 +164,9 @@ contract ExtendedFDTTest is MapleTest {
 
         uint256 recognizableLossesOf1 = token.recognizableLossesOf(address(account1));
         uint256 recognizableLossesOf2 = token.recognizableLossesOf(address(account2));
+
+        assertEq(recognizableLossesOf1, 4000);
+        assertEq(recognizableLossesOf2, 6000);
         
         account1.basicFDT_recognizeLosses(address(token));
         account2.basicFDT_recognizeLosses(address(token));

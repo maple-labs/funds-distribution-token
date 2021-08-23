@@ -18,7 +18,7 @@ abstract contract BasicFDT is IBasicFDT, ERC20 {
     using SignedSafeMath for  int256;
 
     uint256 internal constant pointsMultiplier = 2 ** 128;
-    uint256 internal pointsPerShare;
+    uint256 internal pointsPerShare ;
 
     mapping(address => int256)  internal pointsCorrection;
     mapping(address => uint256) internal withdrawnFunds;

@@ -143,6 +143,9 @@ contract BasicFDTTest is MapleTest {
 
         uint256 withdrawableFunds1 = token.withdrawableFundsOf(address(account1));
         uint256 withdrawableFunds2 = token.withdrawableFundsOf(address(account2));
+
+        assertEq(withdrawableFunds1, 4000);
+        assertEq(withdrawableFunds2, 6000);
         
         account1.basicFDT_withdrawFunds(address(token));
         account2.basicFDT_withdrawFunds(address(token));
