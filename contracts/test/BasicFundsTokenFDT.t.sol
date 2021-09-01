@@ -1,63 +1,24 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity 0.6.11;
 
-import { MapleTest }        from "../../modules/maple-test/contracts/test.sol";
-import { ERC20, SafeMath }  from "../../modules/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+import { MapleTest } from "../../modules/maple-test/contracts/test.sol";
 
-import { BasicFundsTokenFDT } from "../BasicFundsTokenFDT.sol";
+import { BasicFundsTokenFDTUser } from "./accounts/BasicFundsTokenFDTUser.sol";
 
-import { IBasicFDT } from "../interfaces/IBasicFDT.sol";
-
-import { Account } from "./accounts/Account.sol";
-
-contract CompleteBasicFundsTokenFDT is BasicFundsTokenFDT {
-
-    constructor(string memory name, string memory symbol, address fundsToken) public BasicFundsTokenFDT(name, symbol, fundsToken) {}
-
-    function mint(address to, uint256 amt) public {
-        _mint(to, amt);
-    }
-
-    function burn(address account, uint256 amt) public {
-        _burn(account, amt);
-    }
-
-    function pointsCorrection_(address account) external view returns (int256) {
-        return pointsCorrection[account];
-    } 
-
-    function pointsPerShare_() external view returns (uint256) {
-        return pointsPerShare;
-    }
-
-    function pointsMultiplier_() external view returns (uint256) {
-        return pointsMultiplier;
-    }
-
-}
-
-contract MockToken is ERC20 {
-
-    constructor(string memory name, string memory symbol) public ERC20(name, symbol) {}
-
-    function mint(address to, uint256 amt) public {
-        _mint(to, amt);
-    }
-
-}
+import { MockBasicFundsTokenFDT, MockToken } from "./mocks/Mocks.sol";
 
 contract BasicFundsTokenFDTTest is MapleTest {
 
-    Account                    account1;
-    Account                    account2;
-    CompleteBasicFundsTokenFDT fundsTokenFdt;
-    MockToken                  fundsToken;
+    BasicFundsTokenFDTUser account1;
+    BasicFundsTokenFDTUser account2;
+    MockBasicFundsTokenFDT fundsTokenFdt;
+    MockToken              fundsToken;
 
     function setUp() public {
-        account1      = new Account();
-        account2      = new Account();
+        account1      = new BasicFundsTokenFDTUser();
+        account2      = new BasicFundsTokenFDTUser();
         fundsToken    = new MockToken("Token", "TKN");
-        fundsTokenFdt = new CompleteBasicFundsTokenFDT("BasicFDT", "FDT", address(fundsToken));
+        fundsTokenFdt = new MockBasicFundsTokenFDT("BasicFDT", "FDT", address(fundsToken));
     }
 
     function test_updateFundsReceived() public {
@@ -66,14 +27,14 @@ contract BasicFundsTokenFDTTest is MapleTest {
         // Mint and transfer some funds token to FundsTokenFDT.
         fundsToken.mint(address(fundsTokenFdt), 10_000);
 
-        assertTrue(!account1.try_basicFundsTokenFDT_updateFundsRecevied(address(fundsTokenFdt)));  // Should fail because total supply is zero
+        assertTrue(!account1.try_fdt_updateFundsReceived(address(fundsTokenFdt)));  // Should fail because total supply is zero
         
         fundsTokenFdt.mint(address(account1), 1000);
         fundsTokenFdt.mint(address(account2), 5000);
 
         assertEq(fundsTokenFdt.pointsPerShare_(), 0);  // Before the execution of `updateFundsReceived`.
         
-        assertTrue(account1.try_basicFundsTokenFDT_updateFundsRecevied(address(fundsTokenFdt)));  // Should pass as total supply is greater than 0.
+        assertTrue(account1.try_fdt_updateFundsReceived(address(fundsTokenFdt)));  // Should pass as total supply is greater than 0.
 
         // Funds token balance get updated after the `updateFundsReceived()`.
         assertEq(fundsTokenFdt.fundsTokenBalance(), 10_000);
@@ -126,7 +87,7 @@ contract BasicFundsTokenFDTTest is MapleTest {
         fundsTokenFdt.updateFundsReceived();
 
         int256 oldPointsCorrectionFrom = fundsTokenFdt.pointsCorrection_(address(account1));
-        assertTrue(account1.try_basicFundsTokenFDT_transfer(address(fundsTokenFdt), address(account2), 500));
+        assertTrue(account1.try_erc20_transfer(address(fundsTokenFdt), address(account2), 500));
         int256 newPointsCorrectionFrom = fundsTokenFdt.pointsCorrection_(address(account1));
 
         int256 delta = newPointsCorrectionFrom - oldPointsCorrectionFrom;
@@ -151,8 +112,8 @@ contract BasicFundsTokenFDTTest is MapleTest {
         assertEq(fundsToken.balanceOf(address(account1)), 0);
         assertEq(fundsToken.balanceOf(address(account2)), 0);
 
-        account1.basicFundsTokenFDT_withdrawFunds(address(fundsTokenFdt));
-        account2.basicFundsTokenFDT_withdrawFunds(address(fundsTokenFdt));
+        account1.fdt_withdrawFunds(address(fundsTokenFdt));
+        account2.fdt_withdrawFunds(address(fundsTokenFdt));
 
         assertEq(fundsToken.balanceOf(address(account1)), withdrawableFunds1);
         assertEq(fundsToken.balanceOf(address(account2)), withdrawableFunds2);

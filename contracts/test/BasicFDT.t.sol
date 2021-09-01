@@ -1,69 +1,22 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity 0.6.11;
 
-import { MapleTest }        from "../../modules/maple-test/contracts/test.sol";
-import { ERC20, SafeMath }  from "../../modules/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+import { MapleTest } from "../../modules/maple-test/contracts/test.sol";
 
-import { BasicFDT } from "../BasicFDT.sol";
+import { BasicFDTUser } from "./accounts/BasicFDTUser.sol";
 
-import { IBasicFDT } from "../interfaces/IBasicFDT.sol";
-
-import { Account } from "./accounts/Account.sol";
-
-contract MockFDT is BasicFDT {
-
-    uint256 public fundsBalance;
-    uint256 public lastFundsBalance;
-
-    constructor(string memory name, string memory symbol) public BasicFDT(name, symbol) {}
-
-    function mint(address to, uint256 amt) public {
-        _mint(to, amt);
-    }
-
-    function burn(address account, uint256 amt) public {
-        _burn(account, amt);
-    }
-
-    function withdrawFunds() public virtual override {
-        uint256 withdrawableFunds = _prepareWithdraw();
-        fundsBalance              = fundsBalance.sub(withdrawableFunds);
-
-        _updateFundsTokenBalance();
-    }
-
-    function _updateFundsTokenBalance() internal override returns (int256 delta) {
-        delta            = int256(fundsBalance - lastFundsBalance);
-        lastFundsBalance = fundsBalance;
-    }
-
-    function increaseFundsReceived(uint256 amount) external {
-        fundsBalance = fundsBalance + amount;
-    }
-
-    function pointsCorrection_(address account) external view returns (int256) {
-        return pointsCorrection[account];
-    } 
-
-    function pointsPerShare_() external view returns (uint256) {
-        return pointsPerShare;
-    }
-
-    function pointsMultiplier_() external pure returns (uint256) {
-        return pointsMultiplier;
-    }
-}
+import { MockBasicFDT } from "./mocks/Mocks.sol";
 
 contract BasicFDTTest is MapleTest {
 
-    Account account1;
-    Account account2;
-    MockFDT token;
+    BasicFDTUser account1;
+    BasicFDTUser account2;
+    MockBasicFDT token;
 
     function setUp() public {
-        account1 = new Account();
-        account2 = new Account();
-        token    = new MockFDT("MockFDT", "FDT");
+        account1 = new BasicFDTUser();
+        account2 = new BasicFDTUser();
+        token    = new MockBasicFDT("MockFDT", "FDT");
     }
 
     function test_updateFundsReceived() public {
@@ -71,14 +24,14 @@ contract BasicFDTTest is MapleTest {
 
         token.increaseFundsReceived(10_000);
 
-        assertTrue(!account1.try_basicFDT_updateFundsRecevied(address(token)));  // Should fail because total supply is zero
+        assertTrue(!account1.try_fdt_updateFundsReceived(address(token)));  // Should fail because total supply is zero
         
         token.mint(address(account1), 1000);
         token.mint(address(account2), 5000);
 
         assertEq(token.pointsPerShare_(), 0);  // Before the execution of `updateFundsReceived`.
         
-        assertTrue(account1.try_basicFDT_updateFundsRecevied(address(token)));  // Should pass as total supply is greater than 0.
+        assertTrue(account1.try_fdt_updateFundsReceived(address(token)));  // Should pass as total supply is greater than 0.
         
         assertEq(token.fundsBalance(),    10_000);
         assertEq(token.pointsPerShare_(), 567137278201564105772291012386280352426); // pointsPerShare + 10_000 * pointMultiplier / totalSupply
@@ -125,7 +78,7 @@ contract BasicFDTTest is MapleTest {
         token.updateFundsReceived();
 
         int256 oldPointsCorrectionFrom = token.pointsCorrection_(address(account1));
-        assertTrue(account1.try_basicFDT_transfer(address(token), address(account2), 500));
+        assertTrue(account1.try_erc20_transfer(address(token), address(account2), 500));
         int256 newPointsCorrectionFrom = token.pointsCorrection_(address(account1));
 
         int256 delta = newPointsCorrectionFrom - oldPointsCorrectionFrom;
@@ -147,8 +100,8 @@ contract BasicFDTTest is MapleTest {
         assertEq(withdrawableFunds1, 4000);
         assertEq(withdrawableFunds2, 6000);
         
-        account1.basicFDT_withdrawFunds(address(token));
-        account2.basicFDT_withdrawFunds(address(token));
+        account1.fdt_withdrawFunds(address(token));
+        account2.fdt_withdrawFunds(address(token));
 
         assertEq(token.withdrawnFundsOf(address(account1)), withdrawableFunds1);
         assertEq(token.withdrawnFundsOf(address(account2)), withdrawableFunds2);
