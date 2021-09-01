@@ -11,9 +11,9 @@ contract MockUser is ExtendedFDTUser, MockExtendedFDTUser {}
 
 contract ExtendedFDTTest is MapleTest {
 
+    MockExtendedFDT token;
     MockUser        account1;
     MockUser        account2;
-    MockExtendedFDT token;
 
     function setUp() public {
         account1 = new MockUser();
